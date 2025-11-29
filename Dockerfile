@@ -1,19 +1,17 @@
 FROM apache/superset:latest
 
-# Cambiamos a root para poder instalar cosas
 USER root
 
-# Actualizamos pip para evitar errores de compilación
-RUN pip install --upgrade pip
+# 1. ACTUALIZAR PIP
+RUN /app/.venv/bin/pip install --upgrade pip
 
-# Instalamos los drivers OBLIGATORIOS
-# psycopg2-binary -> Para conectar con Railway (PostgreSQL)
-# redis -> Para la caché de Railway
-# pymysql -> Para conectar con tu base de datos de datos (MySQL)
-RUN pip install psycopg2-binary redis pymysql cryptography
+# 2. INSTALACIÓN DE DRIVERS (TÉCNICA FRANCOTIRADOR)
+# Usamos la ruta completa al pip del entorno virtual (/app/.venv/bin/pip)
+# Agregamos --force-reinstall para asegurar que se instale sí o sí.
+RUN /app/.venv/bin/pip install --no-cache-dir --force-reinstall psycopg2-binary redis pymysql cryptography
 
-# Copiamos tu configuración
+# 3. CONFIGURACIÓN
 COPY superset_config.py /app/pythonpath/superset_config.py
 
-# Regresamos al usuario superset para que corra seguro
+# 4. VOLVER A USUARIO SEGURO
 USER superset
