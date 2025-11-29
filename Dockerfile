@@ -1,13 +1,19 @@
-# Dockerfile
 FROM apache/superset:latest
 
+# Cambiamos a root para poder instalar cosas
 USER root
 
-# Instalamos los conectores para que Superset pueda hablar con PostgreSQL y Redis en la nube
-RUN pip install psycopg2-binary redis
+# Actualizamos pip para evitar errores de compilación
+RUN pip install --upgrade pip
 
-# Copiamos la configuración que crearemos en el siguiente paso
+# Instalamos los drivers OBLIGATORIOS
+# psycopg2-binary -> Para conectar con Railway (PostgreSQL)
+# redis -> Para la caché de Railway
+# pymysql -> Para conectar con tu base de datos de datos (MySQL)
+RUN pip install psycopg2-binary redis pymysql cryptography
+
+# Copiamos tu configuración
 COPY superset_config.py /app/pythonpath/superset_config.py
 
-# Volvemos al usuario seguro
+# Regresamos al usuario superset para que corra seguro
 USER superset
