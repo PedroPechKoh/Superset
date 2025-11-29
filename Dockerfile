@@ -1,11 +1,16 @@
 FROM apache/superset:latest
 
-# Cambiamos a root para tener permisos de instalación
 USER root
 
-# Instalamos los drivers usando el comando estándar
-# Esto los instalará donde sea que Python esté configurado
-RUN pip install --no-cache-dir psycopg2-binary redis pymysql cryptography
+# TÉCNICA DE INSERCIÓN DIRECTA
+# El error nos dijo que Superset busca en: /app/.venv/lib/python3.10/site-packages/
+# Así que forzamos la instalación EXACTAMENTE ahí.
+
+RUN pip install --target=/app/.venv/lib/python3.10/site-packages/ \
+    psycopg2-binary \
+    redis \
+    pymysql \
+    cryptography
 
 # Copiamos tu configuración
 COPY superset_config.py /app/pythonpath/superset_config.py
