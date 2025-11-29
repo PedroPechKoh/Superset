@@ -1,29 +1,39 @@
 import os
 
-# --- SEGURIDAD ---
-# Permitimos que Superset se vea en cualquier sitio (luego lo restringiremos a tu dominio)
+# ===========================
+# 🔐 SEGURIDAD BÁSICA (RAILWAY)
+# ===========================
+
+# --- Frame embedding (para React, Preset o front externo) ---
 TALISMAN_CONFIG = {
     "content_security_policy": {
-        "frame-ancestors": ["*"], 
+        "frame-ancestors": ["*"],  # Permite incrustar desde cualquier dominio
     },
     "force_https": False,
     "session_cookie_secure": False,
 }
 
+# --- CORS (para frontend externo como Vite/React) ---
 ENABLE_CORS = True
 CORS_OPTIONS = {
-    'supports_credentials': True,
-    'allow_headers': ['*'],
-    'resources': [r"/*"],
-    'origins': ["*"] # Aceptamos todo por ahora para que no te falle al probar
+    "supports_credentials": True,
+    "allow_headers": ["*"],
+    "resources": [r"/*"],
+    "origins": ["*"],  # Permite todo para pruebas → cámbialo después
 }
 
-WTF_CSRF_ENABLED = False 
+# --- Desactivar CSRF para API Embedding ---
+WTF_CSRF_ENABLED = False
 
-# --- CONEXIONES DE NUBE (RAILWAY) ---
-# Railway inyectará estos valores automáticamente
+
+# ===========================
+# 🗄️ CONEXIONES A SERVICIOS EN RAILWAY
+# ===========================
+
+# Base de datos
 SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URL")
 
+# Redis cache
 CACHE_CONFIG = {
     "CACHE_TYPE": "RedisCache",
     "CACHE_DEFAULT_TIMEOUT": 300,
@@ -31,4 +41,21 @@ CACHE_CONFIG = {
     "CACHE_REDIS_URL": os.getenv("REDIS_URL"),
 }
 
-SECRET_KEY = os.getenv("SUPERSET_SECRET_KEY")
+# Llave secreta
+SECRET_KEY = os.getenv("SUPERSET_SECRET_KEY", "fallback-secret-key")
+
+
+# ===========================
+# 💾 EXTRA – Ajustes recomendados
+# ===========================
+
+# Evita warning al usar MySQL
+SQLALCHEMY_ENGINE_OPTIONS = {
+    "pool_pre_ping": True,
+}
+
+# Para evitar fallas de compresión
+DATA_CACHE_CONFIG = {
+    "CACHE_TYPE": "RedisCache",
+    "CACHE_REDIS_URL": os.getenv("REDIS_URL"),
+}
