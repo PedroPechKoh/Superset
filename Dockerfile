@@ -1,19 +1,23 @@
+# --- BASE IMAGE ---
 FROM apache/superset:3.1.0
 
+# --- USUARIO ROOT PARA INSTALACIÓN ---
 USER root
 
-# Instalamos drivers
+# --- INSTALAMOS DRIVERS ---
 RUN pip install --no-cache-dir psycopg2-binary redis pymysql cryptography flask-cors
 
-# Puente para librerías
+# --- PUENTE PARA LIBRERÍAS ---
 ENV PYTHONPATH="${PYTHONPATH}:/usr/local/lib/python3.10/site-packages"
 
-# Copiamos configuración
+# --- COPIAMOS CONFIGURACIÓN ---
 COPY superset_config.py /app/pythonpath/superset_config.py
 
+# --- VOLVEMOS A USUARIO superset ---
 USER superset
 
-# --- LA SOLUCIÓN DEFINITIVA ---
-# Grabamos el comando de arranque directamente en la imagen.
-# Ya no intentará crear usuarios ni instalar nada, solo PRENDERÁ.
+# --- PUERTO POR DEFECTO (si Railway no lo inyecta automáticamente) ---
+ENV PORT=8088
+
+# --- COMANDO DE ARRANQUE CORRECTO ---
 CMD gunicorn -w 2 --timeout 120 -b 0.0.0.0:$PORT "superset.app:create_app()"
