@@ -1,17 +1,14 @@
 FROM apache/superset:latest
 
+# Cambiamos a root para tener permisos de instalación
 USER root
 
-# 1. ACTUALIZAR PIP
-RUN /app/.venv/bin/pip install --upgrade pip
+# Instalamos los drivers usando el comando estándar
+# Esto los instalará donde sea que Python esté configurado
+RUN pip install --no-cache-dir psycopg2-binary redis pymysql cryptography
 
-# 2. INSTALACIÓN DE DRIVERS (TÉCNICA FRANCOTIRADOR)
-# Usamos la ruta completa al pip del entorno virtual (/app/.venv/bin/pip)
-# Agregamos --force-reinstall para asegurar que se instale sí o sí.
-RUN /app/.venv/bin/pip install --no-cache-dir --force-reinstall psycopg2-binary redis pymysql cryptography
-
-# 3. CONFIGURACIÓN
+# Copiamos tu configuración
 COPY superset_config.py /app/pythonpath/superset_config.py
 
-# 4. VOLVER A USUARIO SEGURO
+# Volvemos al usuario seguro
 USER superset
