@@ -1,19 +1,13 @@
-FROM apache/superset:3.1.0
+# Dockerfile
+FROM apache/superset:latest
 
 USER root
 
-# Instalamos drivers
-RUN pip install --no-cache-dir psycopg2-binary redis pymysql cryptography flask-cors
+# Instalamos los conectores para que Superset pueda hablar con PostgreSQL y Redis en la nube
+RUN pip install psycopg2-binary redis
 
-# Puente para librerías
-ENV PYTHONPATH="${PYTHONPATH}:/usr/local/lib/python3.10/site-packages"
-
-# Copiamos configuración
+# Copiamos la configuración que crearemos en el siguiente paso
 COPY superset_config.py /app/pythonpath/superset_config.py
 
+# Volvemos al usuario seguro
 USER superset
-
-# --- LA SOLUCIÓN DEFINITIVA ---
-# Grabamos el comando de arranque directamente en la imagen.
-# Ya no intentará crear usuarios ni instalar nada, solo PRENDERÁ.
-CMD ["gunicorn", "-w", "2", "--timeout", "120", "-b", "0.0.0.0:8088", "superset.app:create_app()"]

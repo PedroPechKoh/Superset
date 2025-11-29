@@ -13,33 +13,37 @@ CACHE_CONFIG = {
     "CACHE_KEY_PREFIX": "superset_",
     "CACHE_REDIS_URL": os.getenv("REDIS_URL"),
 }
+import os
 
-SECRET_KEY = os.getenv("SUPERSET_SECRET_KEY")
+# --- SEGURIDAD ---
+# Permitimos que Superset se vea en cualquier sitio (luego lo restringiremos a tu dominio)
+TALISMAN_CONFIG = {
+    "content_security_policy": {
+        "frame-ancestors": ["*"], 
+    },
+    "force_https": False,
+    "session_cookie_secure": False,
+}
 
-# ---------------------------------------------------------
-# 2. SEGURIDAD Y REDES (CORS & IFRAME)
-# ---------------------------------------------------------
 ENABLE_CORS = True
 CORS_OPTIONS = {
     'supports_credentials': True,
     'allow_headers': ['*'],
     'resources': [r"/*"],
-    'origins': ["*"] 
+    'origins': ["*"] # Aceptamos todo por ahora para que no te falle al probar
 }
 
-TALISMAN_ENABLED = False 
-WTF_CSRF_ENABLED = False
+WTF_CSRF_ENABLED = False 
 
-# ---------------------------------------------------------
-# 3. FUNCIONALIDADES
-# ---------------------------------------------------------
-FEATURE_FLAGS = {
-    "EMBEDDED_SUPERSET": True
+# --- CONEXIONES DE NUBE (RAILWAY) ---
+# Railway inyectará estos valores automáticamente
+SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URL")
+
+CACHE_CONFIG = {
+    "CACHE_TYPE": "RedisCache",
+    "CACHE_DEFAULT_TIMEOUT": 300,
+    "CACHE_KEY_PREFIX": "superset_",
+    "CACHE_REDIS_URL": os.getenv("REDIS_URL"),
 }
 
-# ---------------------------------------------------------
-# 4. EL TRUCO MAESTRO (ADIÓS ERROR 403)
-# ---------------------------------------------------------
-# Al poner esto en "Admin", el usuario invitado tendrá acceso TOTAL
-# a todas las bases de datos sin necesidad de configurar nada en el menú.
-GUEST_ROLE_NAME = "Admin"
+SECRET_KEY = os.getenv("SUPERSET_SECRET_KEY")
