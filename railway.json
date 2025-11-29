@@ -1,0 +1,9 @@
+{
+  "build": {
+    "builder": "DOCKERFILE",
+    "watchPatterns": ["Dockerfile", "superset_config.py"]
+  },
+  "deploy": {
+    "startCommand": "superset fab create-admin --username admin --firstname Superset --lastname Admin --email admin@soulart.com --password admin && superset db upgrade && superset init && gunicorn -w 2 --timeout 60 -b 0.0.0.0:8088 'superset.app:create_app()'"
+  }
+}
