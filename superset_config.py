@@ -3,8 +3,9 @@ import os
 # ---------------------------------------------------------
 # 1. CONEXIONES DE NUBE (RAILWAY)
 # ---------------------------------------------------------
-# Railway inyecta estas variables automáticamente
-SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URL")
+# Usamos la variable pública si existe, si no, la privada.
+# Esto asegura que siempre encuentre el camino.
+SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_PUBLIC_URL") or os.getenv("DATABASE_URL")
 
 CACHE_CONFIG = {
     "CACHE_TYPE": "RedisCache",
@@ -18,33 +19,15 @@ SECRET_KEY = os.getenv("SUPERSET_SECRET_KEY")
 # ---------------------------------------------------------
 # 2. SEGURIDAD Y REDES (CORS & IFRAME)
 # ---------------------------------------------------------
-# Permitir que React (Local o Nube) pida datos sin bloqueos
 ENABLE_CORS = True
 CORS_OPTIONS = {
     'supports_credentials': True,
     'allow_headers': ['*'],
     'resources': [r"/*"],
-    'origins': ["*"] # Acepta conexiones desde cualquier lugar
+    'origins': ["*"] 
 }
 
-# Permitir que el Dashboard se muestre dentro de tu página web (Iframe)
-# Desactivamos Talisman para evitar el error "Refused to display"
 TALISMAN_ENABLED = False 
-TALISMAN_CONFIG = {
-    "content_security_policy": {
-        "frame-ancestors": ["*"],
-    },
-    "force_https": False,
-    "session_cookie_secure": False,
-}
-
-# Cabeceras HTTP permisivas
-HTTP_HEADERS = {
-    'X-Frame-Options': 'ALLOWALL',
-    'Access-Control-Allow-Origin': '*',
-}
-
-# Desactivar protección CSRF para evitar errores en la API de Login
 WTF_CSRF_ENABLED = False
 
 # ---------------------------------------------------------
@@ -55,8 +38,8 @@ FEATURE_FLAGS = {
 }
 
 # ---------------------------------------------------------
-# 4. SOLUCIÓN FINAL DE PERMISOS (EL TRUCO MAESTRO)
+# 4. EL TRUCO MAESTRO (ADIÓS ERROR 403)
 # ---------------------------------------------------------
-# Esto le da permisos totales al usuario invitado ("Guest"),
-# saltándose el bloqueo de la base de datos que no podíamos editar.
+# Al poner esto en "Admin", el usuario invitado tendrá acceso TOTAL
+# a todas las bases de datos sin necesidad de configurar nada en el menú.
 GUEST_ROLE_NAME = "Admin"
