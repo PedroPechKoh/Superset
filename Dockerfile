@@ -1,19 +1,18 @@
 FROM apache/superset:latest
 
+# Cambiamos a root
 USER root
 
-# TÉCNICA DE INSERCIÓN DIRECTA
-# El error nos dijo que Superset busca en: /app/.venv/lib/python3.10/site-packages/
-# Así que forzamos la instalación EXACTAMENTE ahí.
-
-RUN pip install --target=/app/.venv/lib/python3.10/site-packages/ \
+# Instalamos drivers Y AHORA TAMBIÉN flask-cors
+RUN pip install --no-cache-dir \
     psycopg2-binary \
     redis \
     pymysql \
-    cryptography
+    cryptography \
+    flask-cors  <-- ¡ESTA ES LA NUEVA!
 
-# Copiamos tu configuración
+# Copiamos config
 COPY superset_config.py /app/pythonpath/superset_config.py
 
-# Volvemos al usuario seguro
+# Regresamos a usuario seguro
 USER superset
