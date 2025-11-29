@@ -1,15 +1,14 @@
-FROM apache/superset:latest
+FROM apache/superset:3.1.0
 
 USER root
 
-# 1. Instalamos los drivers en el sistema global (donde root tiene permiso)
+# Drivers
 RUN pip install --no-cache-dir psycopg2-binary redis pymysql cryptography flask-cors
 
-# 2. EL PUENTE MÁGICO 🌉
-# Le decimos a Superset que busque librerías también en la carpeta global
+# Permitir que Superset encuentre librerías del sistema
 ENV PYTHONPATH="${PYTHONPATH}:/usr/local/lib/python3.10/site-packages"
 
-# Copiamos la configuración
+# Configuración personalizada
 COPY superset_config.py /app/pythonpath/superset_config.py
 
 USER superset
