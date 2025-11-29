@@ -59,3 +59,8 @@ DATA_CACHE_CONFIG = {
     "CACHE_TYPE": "RedisCache",
     "CACHE_REDIS_URL": os.getenv("REDIS_URL"),
 }
+
+# ¡ESTO ES LO QUE FALTABA!
+FEATURE_FLAGS = {
+    "EMBEDDED_SUPERSET": True
+}
