@@ -16,4 +16,4 @@ USER superset
 # --- LA SOLUCIÓN DEFINITIVA ---
 # Grabamos el comando de arranque directamente en la imagen.
 # Ya no intentará crear usuarios ni instalar nada, solo PRENDERÁ.
-CMD ["gunicorn", "-w", "2", "--timeout", "120", "-b", "0.0.0.0:$PORT", "superset.app:create_app()"]
+CMD gunicorn -w 2 --timeout 120 -b 0.0.0.0:$PORT "superset.app:create_app()"
