@@ -64,3 +64,6 @@ DATA_CACHE_CONFIG = {
 FEATURE_FLAGS = {
     "EMBEDDED_SUPERSET": True
 }
+
+# ENLACE FINAL: Asigna el rol "Gamma" a todos los usuarios invitados/guest.
+GUEST_ROLE_NAME = "Gamma"
