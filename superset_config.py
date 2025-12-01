@@ -1,62 +1,27 @@
 import os
 
-# ---------------------------------------------------------
-# 1. CONEXIONES DE NUBE (RAILWAY)
-# ---------------------------------------------------------
-# Railway inyecta estas variables automáticamente.
-# Es vital que en Railway tengas la variable DATABASE_URL apuntando a Postgres
-SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URL")
+# Clave secreta (Llenaremos esto en las variables de Railway)
+SECRET_KEY = os.getenv("SECRET_KEY")
 
-CACHE_CONFIG = {
-    "CACHE_TYPE": "RedisCache",
-    "CACHE_DEFAULT_TIMEOUT": 300,
-    "CACHE_KEY_PREFIX": "superset_",
-    "CACHE_REDIS_URL": os.getenv("REDIS_URL"),
-}
+# Permitir que Superset se ejecute detrás del proxy de Railway
+ENABLE_PROXY_FIX = True
 
-SECRET_KEY = os.getenv("SUPERSET_SECRET_KEY")
+# Desactivar protección estricta contra iFrames para permitir incrustar
+TALISMAN_ENABLED = False 
 
-# ---------------------------------------------------------
-# 2. SEGURIDAD Y REDES (CORS & IFRAME)
-# ---------------------------------------------------------
-# Permitir que React (desde cualquier lugar) pida datos
+# Habilitar CORS para tu dominio de Railway y Frontend
 ENABLE_CORS = True
 CORS_OPTIONS = {
-    'supports_credentials': True,
-    'allow_headers': ['*'],
-    'resources': [r"/*"],
-    'origins': ["*"] # Acepta conexiones desde localhost y tu web real
+    "supports_credentials": True,
+    "allow_headers": ["*"],
+    "resources": ["*"],
+    "origins": ["*"] # O pon aquí tu dominio: ["https://soulart-production.up.railway.app"]
 }
 
-# Permitir que el Dashboard se muestre dentro de un iframe
-TALISMAN_ENABLED = False 
-TALISMAN_CONFIG = {
-    "content_security_policy": {
-        "frame-ancestors": ["*"],
-    },
-    "force_https": False,
-    "session_cookie_secure": False,
-}
-
-# Cabeceras HTTP permisivas
-HTTP_HEADERS = {
-    'X-Frame-Options': 'ALLOWALL',
-    'Access-Control-Allow-Origin': '*',
-}
-
-# Desactivar protección CSRF para la API
-WTF_CSRF_ENABLED = False
-
-# ---------------------------------------------------------
-# 3. FUNCIONALIDADES
-# ---------------------------------------------------------
+# Feature Flags: ¡IMPORTANTE para Dashboards embebidos!
 FEATURE_FLAGS = {
     "EMBEDDED_SUPERSET": True
 }
 
-# ---------------------------------------------------------
-# 4. SOLUCIÓN FINAL DE PERMISOS (EL CÓDIGO MAESTRO)
-# ---------------------------------------------------------
-# Al poner esto en "Admin", el usuario invitado ("Guest User")
-# hereda TODOS los permisos, saltándose el bloqueo de la base de datos.
-GUEST_ROLE_NAME = "Admin"
+# Configuración de Base de Datos (Railway usa Postgres para la metadata de Superset)
+SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URL")

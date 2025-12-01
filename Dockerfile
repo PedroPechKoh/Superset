@@ -1,13 +1,18 @@
-# Dockerfile
 FROM apache/superset:latest
 
 USER root
 
-# Instalamos los conectores para que Superset pueda hablar con PostgreSQL y Redis en la nube
-RUN pip install psycopg2-binary redis
+# Instalar dependencias del sistema para mysqlclient
+RUN apt-get update && apt-get install -y \
+    pkg-config \
+    default-libmysqlclient-dev \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
 
-# Copiamos la configuración que crearemos en el siguiente paso
+# Copiar config y requirements
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+
 COPY superset_config.py /app/pythonpath/superset_config.py
 
-# Volvemos al usuario seguro
 USER superset
